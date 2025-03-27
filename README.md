@@ -1,26 +1,38 @@
 # AI Code Agent
 
-A TypeScript-based AI agent for code editing, searching, and project analysis.
+An intelligent coding assistant powered by OpenAI's GPT-4 that helps you navigate, analyze, and manage your codebase through natural language interactions.
 
 ## Features
 
-- File reading and editing
-- Code search across files
-- Project structure analysis
-- Command execution
-- Interactive terminal interface
-- AI-powered code assistance
+- 🤖 **AI-Powered Assistance**: Get help with coding tasks through natural language conversations
+- 📂 **File Operations**: Read, search, and analyze files in your project
+- 📊 **Project Analysis**: Get insights about your project structure and organization
+- ⚡ **Command Execution**: Execute shell commands safely through the AI interface
+- 🎨 **Beautiful CLI Interface**: User-friendly command-line interface with colorful output
+- 🔒 **Secure**: API keys and sensitive data are handled securely through environment variables
+
+## Prerequisites
+
+- Node.js (v14 or higher)
+- npm (v6 or higher)
+- OpenAI API key
 
 ## Installation
 
-1. Clone the repository
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/ai-code-agent.git
+cd ai-code-agent
+```
+
 2. Install dependencies:
 
 ```bash
 npm install
 ```
 
-3. Create a `.env` file in the root directory:
+3. Create a `.env` file:
 
 ```bash
 cp .env.example .env
@@ -33,67 +45,125 @@ OPENAI_API_KEY=your_api_key_here
 MODEL_NAME=gpt-4-turbo-preview
 ```
 
-5. Build the project:
-
-```bash
-npm run build
-```
-
 ## Usage
 
-The tool provides two ways to interact:
-
-### 1. Interactive Chat Interface (Recommended)
-
-Run the chat interface:
+Start the chat interface:
 
 ```bash
 npm run chat
 ```
 
-This will start an interactive session where you can:
+### Available Commands
 
-- Ask the AI assistant for help with coding tasks
-- Read files
-- Search for text in files
-- Analyze project structure
-- Execute commands
-- Navigate through options using arrow keys
+1. **💬 Ask AI Assistant**
 
-The AI assistant can:
+   - Ask questions about your codebase
+   - Get help with coding tasks
+   - Request code analysis or explanations
 
-- Understand natural language requests
-- Use available tools to gather information
-- Provide helpful responses with context
-- Execute necessary commands
-- Help with code-related tasks
+2. **📂 List current directory**
 
-### 2. Command Line Interface
+   - View files and folders in the current directory
+   - Navigate through your project structure
 
-You can also use the tool directly from the command line:
+3. **📄 Read a file**
 
-```bash
-# Read a file
-npm run dev -- read <file>
+   - Select and view file contents
+   - See file metadata (size, last modified)
 
-# Search for text in files
-npm run dev -- search <pattern> <text>
+4. **🔍 Search in files**
 
-# Analyze project structure
-npm run dev -- analyze
+   - Search for text across your project
+   - Find specific code patterns or functions
 
-# Execute a command
-npm run dev -- exec <command>
+5. **📊 Analyze project structure**
+
+   - Get an overview of your project
+   - View file counts and sizes
+   - See directory organization
+
+6. **⚡ Execute command**
+   - Run shell commands safely
+   - Get command output and errors
+
+### Example Interactions
+
+```
+🤖 Welcome to AI Code Agent!
+Type "exit" to quit
+
+? What would you like to do? 💬 Ask AI Assistant
+? What would you like help with? Help me understand the project structure
+
+[AI] Analyzing your request...
+
+💭 [AI Thought Process]
+I'll analyze the project structure to provide a comprehensive overview.
+
+🔧 [AI Tool Usage]
+analyzeProjectStructure()
+
+📊 [AI Tool Results]
+{
+  "totalFiles": 42,
+  "totalSize": 1024,
+  "directories": ["src", "tests", "docs"],
+  "files": [...]
+}
+
+✨ [AI Final Response]
+Your project consists of 42 files...
+```
+
+## Project Structure
+
+```
+ai-code-agent/
+├── src/
+│   ├── services/
+│   │   ├── AIService.ts      # OpenAI integration and AI logic
+│   │   ├── FileService.ts    # File operations and project analysis
+│   │   └── CommandService.ts # Shell command execution
+│   ├── types.ts              # TypeScript type definitions
+│   └── chat.ts               # CLI interface
+├── .env.example              # Example environment variables
+├── package.json              # Project dependencies and scripts
+└── tsconfig.json            # TypeScript configuration
 ```
 
 ## Development
 
-To run in development mode:
+### Building
+
+```bash
+npm run build
+```
+
+### Running Tests
+
+```bash
+npm test
+```
+
+### Development Mode
 
 ```bash
 npm run dev
 ```
 
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- OpenAI for providing the GPT-4 API
+- The open-source community for various tools and libraries used in this project

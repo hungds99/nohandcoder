@@ -2,6 +2,7 @@ export interface FileInfo {
   path: string;
   content: string;
   size: number;
+  modified: Date;
 }
 
 export interface SearchResult {
@@ -11,10 +12,14 @@ export interface SearchResult {
 }
 
 export interface ProjectStructure {
-  files: string[];
-  directories: string[];
   totalFiles: number;
   totalSize: number;
+  directories: string[];
+  files: Array<{
+    path: string;
+    size: number;
+    modified: Date;
+  }>;
 }
 
 export interface EditResult {
