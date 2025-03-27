@@ -160,7 +160,7 @@ Remember to:
       });
 
       // Get final response from model
-      const finalResponse = await this.openai.chat.completions.create({
+      const finalStream = await this.openai.chat.completions.create({
         model: process.env.MODEL_NAME || "gpt-4-turbo-preview",
         messages: [
           { role: "system", content: systemPrompt },
@@ -168,14 +168,19 @@ Remember to:
         ],
         temperature: 0.7,
         max_tokens: 1000,
+        stream: true,
       });
 
-      const finalContent = finalResponse.choices[0]?.message?.content || "";
-      fullResponse += finalContent;
-      if (onStream) {
-        onStream(finalContent);
-      } else {
-        process.stdout.write(finalContent);
+      for await (const chunk of finalStream) {
+        const content = chunk.choices[0]?.delta?.content || "";
+        if (content) {
+          fullResponse += content;
+          if (onStream) {
+            onStream(content);
+          } else {
+            process.stdout.write(content);
+          }
+        }
       }
     }
 

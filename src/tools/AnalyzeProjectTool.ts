@@ -27,7 +27,19 @@ export class AnalyzeProjectTool implements BaseTool {
 
   async execute(): Promise<ProjectStructure> {
     console.log(chalk.blue("Analyzing project structure..."));
-    const files = await glob("**/*", { cwd: this.workspaceRoot });
+
+    const files = await glob("**/*", {
+      cwd: this.workspaceRoot,
+      ignore: [
+        "**/node_modules/**",
+        "**/.git/**",
+        "**/dist/**",
+        "**/.env*",
+        "**/package-lock.json",
+      ],
+      dot: false,
+    });
+
     const structure: ProjectStructure = {
       files: [],
       directories: [],
@@ -36,6 +48,7 @@ export class AnalyzeProjectTool implements BaseTool {
     };
 
     for (const file of files) {
+      console.log(chalk.green("Analyzing file:", file));
       const fullPath = path.join(this.workspaceRoot, file);
       const stats = await fs.promises.stat(fullPath);
 
