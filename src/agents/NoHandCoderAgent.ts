@@ -71,8 +71,6 @@ Remember to:
       ...this.conversationHistory,
     ];
 
-    console.log(chalk.yellow("\n[AI] Processing your request..."));
-
     const stream = await this.openai.chat.completions.create({
       model: process.env.MODEL_NAME || "gpt-4-turbo-preview",
       messages: messages as any,
@@ -100,44 +98,5 @@ Remember to:
     this.conversationHistory.push({ role: "assistant", content: fullResponse });
 
     return fullResponse;
-  }
-
-  private async executeToolCalls(
-    toolCalls: Array<{ function: { name: string; arguments: string } }>
-  ): Promise<any[]> {
-    const results = [];
-
-    for (const call of toolCalls) {
-      try {
-        const toolName = call.function.name;
-        const args = JSON.parse(call.function.arguments);
-
-        console.log(chalk.blue(`\n[AI] Using tool: ${toolName}`));
-        console.log(chalk.gray(`Arguments: ${JSON.stringify(args, null, 2)}`));
-
-        const tool = this.tools.find(
-          (t) => t.definition.function.name === toolName
-        );
-        if (!tool) {
-          throw new Error(`Unknown tool: ${toolName}`);
-        }
-
-        const result = await tool.instance.execute(args);
-        console.log(chalk.green(`Result: Tool executed successfully`));
-        results.push({ tool: toolName, success: true, result });
-      } catch (error) {
-        console.error(
-          chalk.red(`Error using tool ${call.function.name}:`),
-          error
-        );
-        results.push({
-          tool: call.function.name,
-          success: false,
-          error: error instanceof Error ? error.message : "Unknown error",
-        });
-      }
-    }
-
-    return results;
   }
 }
