@@ -8,6 +8,7 @@ export class NoHandCoderAgent {
     instance: any;
     definition: OpenAI.Chat.ChatCompletionTool;
   }>;
+  private conversationHistory: OpenAI.Chat.ChatCompletionMessageParam[];
 
   constructor(workspaceRoot: string) {
     this.openai = new OpenAI({
@@ -23,6 +24,9 @@ export class NoHandCoderAgent {
       instance: tool,
       definition: tool.getDefinition(),
     }));
+
+    // Initialize conversation history
+    this.conversationHistory = [];
   }
 
   private getTools(): OpenAI.Chat.ChatCompletionTool[] {
@@ -32,13 +36,21 @@ export class NoHandCoderAgent {
   private async getSystemPrompt(): Promise<string> {
     return `You are an AI coding assistant with access to various tools to help with coding tasks.
 Your task is to help users with their coding tasks by:
-1. Understanding their requests
-2. Using appropriate tools to gather information
-3. Providing clear and helpful responses
-4. Executing necessary commands when needed
+1. Understanding their requests and maintaining context from previous messages
+2. Using appropriate tools to gather information when needed
+3. Providing clear, helpful, and natural responses
+4. Executing necessary commands when required
 
 When using tools, explain your thought process and why you're using each tool.
-Provide your responses in a clear, natural way without using any special tags or formatting.
+Provide your responses in a clear, conversational way without using any special tags or formatting.
+Keep your responses concise but informative.
+
+Remember to:
+- Maintain context from previous messages
+- Be proactive in suggesting relevant tools or actions
+- Ask clarifying questions when needed
+- Provide code examples when appropriate
+- Explain your reasoning when making changes
 
 `;
   }
@@ -50,12 +62,16 @@ Provide your responses in a clear, natural way without using any special tags or
     const systemPrompt = await this.getSystemPrompt();
     const tools = this.getTools();
 
+    // Add user message to history
+    this.conversationHistory.push({ role: "user", content: userInput });
+
+    // Prepare messages with history
     const messages = [
       { role: "system", content: systemPrompt },
-      { role: "user", content: userInput },
+      ...this.conversationHistory,
     ];
 
-    console.log(chalk.yellow("\n[AI] Analyzing your request..."));
+    console.log(chalk.yellow("\n[AI] Processing your request..."));
 
     const stream = await this.openai.chat.completions.create({
       model: process.env.MODEL_NAME || "gpt-4-turbo-preview",
@@ -79,6 +95,10 @@ Provide your responses in a clear, natural way without using any special tags or
         }
       }
     }
+
+    // Add assistant's response to history
+    this.conversationHistory.push({ role: "assistant", content: fullResponse });
+
     return fullResponse;
   }
 
