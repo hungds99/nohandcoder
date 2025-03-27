@@ -6,22 +6,24 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/chat.ts",
     "chat": "ts-node src/chat.ts"
   },
   "dependencies": {
-    "commander": "^11.1.0",
     "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "dotenv": "^16.4.5",
     "glob": "^10.3.10",
-    "typescript": "^5.3.3",
     "inquirer": "^8.2.6",
+    "inquirer-search-list": "^1.2.6",
     "openai": "^4.28.0",
-    "dotenv": "^16.4.5"
+    "typescript": "^5.3.3"
   },
   "devDependencies": {
-    "@types/node": "^20.11.19",
     "@types/glob": "^8.1.0",
     "@types/inquirer": "^8.2.6",
+    "@types/node": "^20.11.19",
+    "nodemon": "^3.1.9",
     "ts-node": "^10.9.2"
   }
-} 
+}
