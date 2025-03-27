@@ -1,0 +1,27 @@
+{
+  "name": "ai-code-agent",
+  "version": "1.0.0",
+  "description": "An AI agent for code editing, searching, and project analysis",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "chat": "ts-node src/chat.ts"
+  },
+  "dependencies": {
+    "commander": "^11.1.0",
+    "chalk": "^4.1.2",
+    "glob": "^10.3.10",
+    "typescript": "^5.3.3",
+    "inquirer": "^8.2.6",
+    "openai": "^4.28.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "@types/glob": "^8.1.0",
+    "@types/inquirer": "^8.2.6",
+    "ts-node": "^10.9.2"
+  }
+} 
