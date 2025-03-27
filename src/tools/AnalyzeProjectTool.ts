@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { ProjectStructure } from "../types";
 import { glob } from "glob";
+import chalk from "chalk";
 
 export class AnalyzeProjectTool implements BaseTool {
   constructor(private workspaceRoot: string) {}
@@ -25,6 +26,7 @@ export class AnalyzeProjectTool implements BaseTool {
   }
 
   async execute(): Promise<ProjectStructure> {
+    console.log(chalk.blue("Analyzing project structure..."));
     const files = await glob("**/*", { cwd: this.workspaceRoot });
     const structure: ProjectStructure = {
       files: [],

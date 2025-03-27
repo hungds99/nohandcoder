@@ -2,7 +2,7 @@ import { OpenAI } from "openai";
 import { BaseTool } from "../core/BaseTool";
 import fs from "fs";
 import path from "path";
-
+import chalk from "chalk";
 export class EditFileTool implements BaseTool {
   constructor(private workspaceRoot: string) {}
 
@@ -34,6 +34,7 @@ export class EditFileTool implements BaseTool {
   }
 
   async execute(args: { filePath: string; content: string }): Promise<void> {
+    console.log(chalk.blue("Editing file...", args.filePath));
     const fullPath = path.isAbsolute(args.filePath)
       ? args.filePath
       : path.join(this.workspaceRoot, args.filePath);

@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { SearchResult } from "../types";
 import { glob } from "glob";
+import chalk from "chalk";
 
 export class SearchFilesTool implements BaseTool {
   constructor(private workspaceRoot: string) {}
@@ -38,6 +39,7 @@ export class SearchFilesTool implements BaseTool {
     pattern?: string;
     text: string;
   }): Promise<SearchResult[]> {
+    console.log(chalk.blue("Searching files...", args.pattern, args.text));
     const searchPattern = args.pattern || "**/*";
     const results: SearchResult[] = [];
     const files = await glob(searchPattern, { cwd: this.workspaceRoot });

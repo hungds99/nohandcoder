@@ -1,6 +1,12 @@
 import chalk from "chalk";
 import OpenAI from "openai";
-import { AnalyzeProjectTool, ReadFileTool, SearchFilesTool } from "../tools";
+import {
+  AnalyzeProjectTool,
+  ReadFileTool,
+  SearchFilesTool,
+  ExecuteCommandTool,
+  EditFileTool,
+} from "../tools";
 
 export class NoHandCoderAgent {
   private openai: OpenAI;
@@ -20,6 +26,8 @@ export class NoHandCoderAgent {
       new ReadFileTool(workspaceRoot),
       new SearchFilesTool(workspaceRoot),
       new AnalyzeProjectTool(workspaceRoot),
+      new ExecuteCommandTool(workspaceRoot),
+      new EditFileTool(workspaceRoot),
     ].map((tool) => ({
       instance: tool,
       definition: tool.getDefinition(),
@@ -55,6 +63,20 @@ Remember to:
 `;
   }
 
+  private async executeToolCall(
+    toolCall: OpenAI.Chat.ChatCompletionMessageToolCall
+  ): Promise<any> {
+    const tool = this.tools.find(
+      (t) => t.definition.function.name === toolCall.function.name
+    );
+    if (!tool) {
+      throw new Error(`Tool ${toolCall.function.name} not found`);
+    }
+
+    const args = JSON.parse(toolCall.function.arguments);
+    return await tool.instance.execute(args);
+  }
+
   async handleUserInput(
     userInput: string,
     onStream?: (chunk: string) => void
@@ -71,6 +93,9 @@ Remember to:
       ...this.conversationHistory,
     ];
 
+    let fullResponse = "";
+    let currentToolCalls: OpenAI.Chat.ChatCompletionMessageToolCall[] = [];
+
     const stream = await this.openai.chat.completions.create({
       model: process.env.MODEL_NAME || "gpt-4-turbo-preview",
       messages: messages as any,
@@ -81,9 +106,10 @@ Remember to:
       stream: true,
     });
 
-    let fullResponse = "";
     for await (const chunk of stream) {
       const content = chunk.choices[0]?.delta?.content || "";
+      const toolCalls = chunk.choices[0]?.delta?.tool_calls || [];
+
       if (content) {
         fullResponse += content;
         if (onStream) {
@@ -91,6 +117,65 @@ Remember to:
         } else {
           process.stdout.write(content);
         }
+      }
+
+      // Handle tool calls
+      for (const toolCall of toolCalls) {
+        if (toolCall.index !== undefined) {
+          if (!currentToolCalls[toolCall.index]) {
+            currentToolCalls[toolCall.index] = {
+              id: toolCall.id || "",
+              type: "function",
+              function: {
+                name: toolCall.function?.name || "",
+                arguments: toolCall.function?.arguments || "",
+              },
+            };
+          } else if (toolCall.function?.arguments) {
+            currentToolCalls[toolCall.index].function.arguments +=
+              toolCall.function.arguments;
+          }
+        }
+      }
+    }
+
+    // Execute tool calls if any
+    if (currentToolCalls.length > 0) {
+      const toolResults = await Promise.all(
+        currentToolCalls.map((toolCall) => this.executeToolCall(toolCall))
+      );
+
+      // Add tool results to conversation history
+      this.conversationHistory.push({
+        role: "assistant",
+        content: fullResponse,
+        tool_calls: currentToolCalls,
+      });
+
+      // Add tool results to conversation history
+      this.conversationHistory.push({
+        role: "tool",
+        content: JSON.stringify(toolResults),
+        tool_call_id: currentToolCalls[0].id,
+      });
+
+      // Get final response from model
+      const finalResponse = await this.openai.chat.completions.create({
+        model: process.env.MODEL_NAME || "gpt-4-turbo-preview",
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...this.conversationHistory,
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      });
+
+      const finalContent = finalResponse.choices[0]?.message?.content || "";
+      fullResponse += finalContent;
+      if (onStream) {
+        onStream(finalContent);
+      } else {
+        process.stdout.write(finalContent);
       }
     }
 

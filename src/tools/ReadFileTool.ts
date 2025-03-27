@@ -3,6 +3,7 @@ import { BaseTool } from "../core/BaseTool";
 import fs from "fs";
 import path from "path";
 import { FileInfo } from "../types";
+import chalk from "chalk";
 
 export class ReadFileTool implements BaseTool {
   constructor(private workspaceRoot: string) {}
@@ -31,6 +32,7 @@ export class ReadFileTool implements BaseTool {
   }
 
   async execute(args: { filePath: string }): Promise<FileInfo> {
+    console.log(chalk.blue("Reading file...", args.filePath));
     const fullPath = path.isAbsolute(args.filePath)
       ? args.filePath
       : path.join(this.workspaceRoot, args.filePath);

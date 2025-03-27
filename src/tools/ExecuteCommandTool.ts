@@ -2,6 +2,7 @@ import { OpenAI } from "openai";
 import { BaseTool } from "../core/BaseTool";
 import { exec } from "child_process";
 import { promisify } from "util";
+import chalk from "chalk";
 
 const execAsync = promisify(exec);
 
@@ -31,6 +32,7 @@ export class ExecuteCommandTool implements BaseTool {
   }
 
   async execute(args: { command: string }): Promise<any> {
+    console.log(chalk.blue("Executing command...", args.command));
     try {
       const command = args.command;
       const { stdout, stderr } = await execAsync(command, {
