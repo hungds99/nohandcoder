@@ -35,7 +35,7 @@ async function main() {
         userInput.toLowerCase() === "quit"
       ) {
         console.log(chalk.green("\n👋 Goodbye!"));
-        break;
+        process.exit(0);
       }
 
       if (!userInput) continue;
