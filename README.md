@@ -1,8 +1,10 @@
 # NoHandCoder
 
-Your intelligent coding companion that helps you navigate, analyze, and manage your codebase through simple conversations. Just chat naturally with the AI to get help with your coding tasks!
+<p align="center">
+  <img src="./assets/nohandcoder-demo.png" alt="NoHandCoder Logo" style="border: 2px solid #333; border-radius: 8px; max-width: 800px; width: 100%;">
+</p>
 
-## What You Can Do
+NoHandCoder is your AI-powered coding assistant that transforms how you interact with your codebase. Through natural conversation, it helps you:
 
 - 🤖 **Chat with AI**: Ask questions about your code and get helpful responses
 - 📂 **Browse Files**: Easily navigate through your project files and folders
@@ -11,59 +13,39 @@ Your intelligent coding companion that helps you navigate, analyze, and manage y
 - 📊 **Project Overview**: Get a clear picture of your project structure
 - ⚡ **Run Commands**: Execute commands safely through the AI interface
 
+No more context switching or complex IDE commands - just chat naturally and code efficiently!
+
+### Prerequisites
+
+Before using NoHandCoder, make sure you have the following:
+
+1. Node.js installed on your system
+2. An OpenAI API key
+
 ## Getting Started
 
-1. Install the required software:
+Set up your environment variables:
 
-   - Node.js (v20 or higher)
-   - npm (v9 or higher)
-
-2. Get your OpenAI API key from [OpenAI's website](https://platform.openai.com)
-
-3. Set up the project:
-
-   ```bash
-   # Clone the project
-   git clone https://github.com/hungds99/nohandcoder.git
-   cd nohandcoder
-
-   # Install the project
-   npm install
-
-   # Set up your API key
-   cp .env.example .env
-   ```
-
-4. Add your OpenAI API key to the `.env` file:
-   ```
-   OPENAI_API_KEY=your_api_key_here
-   MODEL_NAME=gpt-4-turbo-preview
-   ```
+```bash
+export OPENAI_API_KEY=your_api_key_here
+export MODEL_NAME=gpt-4-turbo-preview
+```
 
 ## How to Use
 
-1. Start the chat interface:
+1. Install NoHandCoder globally:
 
    ```bash
-   npm run chat
+   npm install -g nohandcoder
    ```
 
-2. Let's feel free to ask
+2. Start the chat interface:
 
-## Example Chat
+   ```bash
+   nohandcoder chat
+   ```
 
-```
-🤖 Welcome to NoHandCoder!
-Type "exit" to quit
-
-? What would you like to do? 💬 Ask AI Assistant
-? What would you like help with? Help me understand the project structure
-
-[AI] Analyzing your request...
-
-✨ [AI Response]
-Your project follows a clean architecture with the following structure...
-```
+3. Let's feel free to ask
 
 ## Tips for Best Results
 
@@ -78,20 +60,6 @@ Your project follows a clean architecture with the following structure...
 - Ask the AI for help with any feature
 - Check the project's issues page for known problems
 
-## Contributing
-
-We welcome contributions! Feel free to:
-
-1. Fork the project
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- OpenAI for providing the GPT-4 API
-- The open-source community for their valuable contributions

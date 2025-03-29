@@ -1,6 +1,6 @@
 {
   "name": "nohandcoder",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "An AI agent for code editing, searching, and project analysis",
   "main": "dist/cli.js",
   "bin": {
@@ -11,7 +11,7 @@
     "start": "node dist/cli.js",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/cli.ts",
     "chat": "ts-node src/cli.ts",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build && chmod +x ./dist/cli.js"
   },
   "keywords": [
     "ai",
