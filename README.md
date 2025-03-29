@@ -15,8 +15,8 @@ Your intelligent coding companion that helps you navigate, analyze, and manage y
 
 1. Install the required software:
 
-   - Node.js (v14 or higher)
-   - npm (v6 or higher)
+   - Node.js (v20 or higher)
+   - npm (v9 or higher)
 
 2. Get your OpenAI API key from [OpenAI's website](https://platform.openai.com)
 
@@ -48,13 +48,7 @@ Your intelligent coding companion that helps you navigate, analyze, and manage y
    npm run chat
    ```
 
-2. Choose from these options:
-   - 💬 **Ask AI Assistant**: Get help with your code
-   - 📂 **List Directory**: See what's in your current folder
-   - 📄 **Read File**: View any file's contents
-   - 🔍 **Search Files**: Find specific code
-   - 📊 **Project Structure**: See your project overview
-   - ⚡ **Run Commands**: Execute commands safely
+2. Let's feel free to ask
 
 ## Example Chat
 
