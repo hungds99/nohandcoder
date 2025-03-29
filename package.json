@@ -1,14 +1,37 @@
 {
-  "name": "ai-code-agent",
+  "name": "nohandcoder",
   "version": "1.0.0",
   "description": "An AI agent for code editing, searching, and project analysis",
-  "main": "dist/index.js",
+  "main": "dist/cli.js",
+  "bin": {
+    "nohandcoder": "./dist/cli.js"
+  },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/chat.ts",
-    "chat": "ts-node src/chat.ts"
+    "start": "node dist/cli.js",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/cli.ts",
+    "chat": "ts-node src/cli.ts",
+    "prepublishOnly": "npm run build"
   },
+  "keywords": [
+    "ai",
+    "code-assistant",
+    "openai",
+    "typescript",
+    "cli",
+    "code-editing",
+    "project-analysis"
+  ],
+  "author": "Hung Dinh",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hungds99/nohandcoder.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hungds99/nohandcoder/issues"
+  },
+  "homepage": "https://github.com/hungds99/nohandcoder#readme",
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^11.1.0",

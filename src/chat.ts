@@ -13,7 +13,7 @@ if (!process.env.OPENAI_API_KEY) {
 const workspaceRoot = process.cwd();
 const aiService = new NoHandCoderAgent(workspaceRoot);
 
-async function main() {
+export async function chat() {
   console.log(chalk.blue("\n🤖 Welcome to AI Code Assistant!"));
   console.log(
     chalk.gray(
@@ -52,7 +52,10 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(chalk.red("\n❌ Fatal error:"), error);
-  process.exit(1);
-});
+// Only run if this file is being run directly
+if (require.main === module) {
+  chat().catch((error) => {
+    console.error(chalk.red("\n❌ Fatal error:"), error);
+    process.exit(1);
+  });
+}
