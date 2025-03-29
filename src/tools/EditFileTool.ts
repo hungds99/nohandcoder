@@ -33,11 +33,16 @@ export class EditFileTool implements BaseTool {
     };
   }
 
-  async execute(args: { filePath: string; content: string }): Promise<void> {
+  async execute(args: { filePath: string; content: string }): Promise<any> {
     console.log(chalk.blue("\nEditing file...", args.filePath));
     const fullPath = path.isAbsolute(args.filePath)
       ? args.filePath
       : path.join(this.workspaceRoot, args.filePath);
     await fs.promises.writeFile(fullPath, args.content, "utf-8");
+
+    return {
+      success: true,
+      message: `File ${args.filePath} updated successfully`,
+    };
   }
 }

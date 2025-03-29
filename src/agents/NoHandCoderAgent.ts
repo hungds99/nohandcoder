@@ -210,10 +210,13 @@ Always be thorough in your analysis but concise in your responses. Focus on comp
           tool_calls: toolCalls,
         });
 
-        this.conversationHistory.push({
-          role: "tool",
-          content: JSON.stringify(toolResults),
-          tool_call_id: toolCalls[0].id,
+        // Add responses for each tool call
+        toolCalls.forEach((toolCall, index) => {
+          this.conversationHistory.push({
+            role: "tool",
+            content: JSON.stringify(toolResults[index]),
+            tool_call_id: toolCall.id,
+          });
         });
 
         // Update current messages for next iteration
