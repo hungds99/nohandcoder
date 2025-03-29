@@ -39,7 +39,7 @@ export class SearchFilesTool implements BaseTool {
     pattern?: string;
     text: string;
   }): Promise<SearchResult[]> {
-    console.log(chalk.blue("Searching files...", args.pattern, args.text));
+    console.log(chalk.blue("\nSearching files...", args.pattern, args.text));
     const searchPattern = args.pattern || "**/*";
     const results: SearchResult[] = [];
     const files = await glob(searchPattern, { cwd: this.workspaceRoot });

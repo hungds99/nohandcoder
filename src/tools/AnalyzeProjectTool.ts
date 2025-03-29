@@ -48,7 +48,7 @@ export class AnalyzeProjectTool implements BaseTool {
     };
 
     for (const file of files) {
-      console.log(chalk.green("Analyzing file:", file));
+      console.log(chalk.green("\nAnalyzing file:", file));
       const fullPath = path.join(this.workspaceRoot, file);
       const stats = await fs.promises.stat(fullPath);
 

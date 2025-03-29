@@ -32,7 +32,7 @@ export class ReadFileTool implements BaseTool {
   }
 
   async execute(args: { filePath: string }): Promise<FileInfo> {
-    console.log(chalk.blue("Reading file...", args.filePath));
+    console.log(chalk.blue("\nReading file...", args.filePath));
     const fullPath = path.isAbsolute(args.filePath)
       ? args.filePath
       : path.join(this.workspaceRoot, args.filePath);

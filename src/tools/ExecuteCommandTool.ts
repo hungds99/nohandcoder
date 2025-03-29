@@ -32,7 +32,7 @@ export class ExecuteCommandTool implements BaseTool {
   }
 
   async execute(args: { command: string }): Promise<any> {
-    console.log(chalk.blue("Executing command...", args.command));
+    console.log(chalk.blue("\nExecuting command...", args.command));
     try {
       const command = args.command;
       const { stdout, stderr } = await execAsync(command, {

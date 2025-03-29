@@ -34,7 +34,7 @@ export class EditFileTool implements BaseTool {
   }
 
   async execute(args: { filePath: string; content: string }): Promise<void> {
-    console.log(chalk.blue("Editing file...", args.filePath));
+    console.log(chalk.blue("\nEditing file...", args.filePath));
     const fullPath = path.isAbsolute(args.filePath)
       ? args.filePath
       : path.join(this.workspaceRoot, args.filePath);

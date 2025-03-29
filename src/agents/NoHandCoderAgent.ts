@@ -42,25 +42,32 @@ export class NoHandCoderAgent {
   }
 
   private async getSystemPrompt(): Promise<string> {
-    return `You are an AI coding assistant with access to various tools to help with coding tasks.
-Your task is to help users with their coding tasks by:
-1. Understanding their requests and maintaining context from previous messages
-2. Using appropriate tools to gather information when needed
-3. Providing clear, helpful, and natural responses
-4. Executing necessary commands when required
+    return `You are an AI coding assistant with access to various tools to help with coding tasks in the current workspace.
 
-When using tools, explain your thought process and why you're using each tool.
-Provide your responses in a clear, conversational way without using any special tags or formatting.
-Keep your responses concise but informative.
+Your task is to help users by following these steps in order:
+
+1. First, analyze the project structure and dependencies using the AnalyzeProjectTool to understand the codebase context
+2. Search for relevant files and folders using SearchFilesTool based on the user's request
+3. Read the identified files using ReadFileTool to understand the code that needs to be modified
+4. Make necessary edits using EditFileTool according to user requirements
+5. Execute any required commands using ExecuteCommandTool if needed
+
+For each action you take:
+1. Explain why you are using each tool and what information you expect to gather
+2. Show the results and explain your findings
+3. Describe your planned next steps based on the information gathered
+4. Get user confirmation before making any file changes
 
 Remember to:
-- Maintain context from previous messages
-- Be proactive in suggesting relevant tools or actions
-- Ask clarifying questions when needed
-- Provide code examples when appropriate
-- Explain your reasoning when making changes
+- Keep track of all files you've examined and changes you've made
+- Verify that proposed changes are consistent with the existing codebase
+- Consider dependencies and potential side effects of changes
+- Ask for clarification if the user's request is ambiguous
+- Explain your reasoning for suggested changes
+- Provide code examples to illustrate your suggestions
+- Maintain context from the conversation history
 
-`;
+Always be thorough in your analysis but concise in your responses. Focus on completing the task systematically while keeping the user informed of your progress.`;
   }
 
   private async executeToolCall(
@@ -77,53 +84,34 @@ Remember to:
     return await tool.instance.execute(args);
   }
 
-  async handleUserInput(
-    userInput: string,
+  private async streamResponse(
+    stream: AsyncIterable<OpenAI.Chat.ChatCompletionChunk>,
     onStream?: (chunk: string) => void
-  ): Promise<string> {
-    const systemPrompt = await this.getSystemPrompt();
-    const tools = this.getTools();
-
-    // Add user message to history
-    this.conversationHistory.push({ role: "user", content: userInput });
-
-    // Prepare messages with history
-    const messages = [
-      { role: "system", content: systemPrompt },
-      ...this.conversationHistory,
-    ];
-
-    let fullResponse = "";
-    let currentToolCalls: OpenAI.Chat.ChatCompletionMessageToolCall[] = [];
-
-    const stream = await this.openai.chat.completions.create({
-      model: process.env.MODEL_NAME || "gpt-4-turbo-preview",
-      messages: messages as any,
-      tools,
-      tool_choice: "auto",
-      temperature: 0.7,
-      max_tokens: 1000,
-      stream: true,
-    });
+  ): Promise<{
+    content: string;
+    toolCalls: OpenAI.Chat.ChatCompletionMessageToolCall[];
+  }> {
+    let content = "";
+    const toolCalls: OpenAI.Chat.ChatCompletionMessageToolCall[] = [];
 
     for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content || "";
-      const toolCalls = chunk.choices[0]?.delta?.tool_calls || [];
+      const deltaContent = chunk.choices[0]?.delta?.content || "";
+      const deltaToolCalls = chunk.choices[0]?.delta?.tool_calls || [];
 
-      if (content) {
-        fullResponse += content;
+      if (deltaContent) {
+        content += deltaContent;
         if (onStream) {
-          onStream(content);
+          onStream(deltaContent);
         } else {
-          process.stdout.write(content);
+          process.stdout.write(deltaContent);
         }
       }
 
       // Handle tool calls
-      for (const toolCall of toolCalls) {
+      for (const toolCall of deltaToolCalls) {
         if (toolCall.index !== undefined) {
-          if (!currentToolCalls[toolCall.index]) {
-            currentToolCalls[toolCall.index] = {
+          if (!toolCalls[toolCall.index]) {
+            toolCalls[toolCall.index] = {
               id: toolCall.id || "",
               type: "function",
               function: {
@@ -132,61 +120,131 @@ Remember to:
               },
             };
           } else if (toolCall.function?.arguments) {
-            currentToolCalls[toolCall.index].function.arguments +=
+            toolCalls[toolCall.index].function.arguments +=
               toolCall.function.arguments;
           }
         }
       }
     }
 
-    // Execute tool calls if any
-    if (currentToolCalls.length > 0) {
-      const toolResults = await Promise.all(
-        currentToolCalls.map((toolCall) => this.executeToolCall(toolCall))
-      );
+    return { content, toolCalls };
+  }
 
-      // Add tool results to conversation history
+  private async executeToolCalls(
+    toolCalls: OpenAI.Chat.ChatCompletionMessageToolCall[]
+  ): Promise<any[]> {
+    try {
+      return await Promise.all(
+        toolCalls.map((toolCall) => this.executeToolCall(toolCall))
+      );
+    } catch (error) {
+      console.error("Error executing tool calls:", error);
+      throw new Error(
+        `Failed to execute tool calls: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  }
+
+  private async getModelResponse(
+    messages: OpenAI.Chat.ChatCompletionMessageParam[],
+    tools?: OpenAI.Chat.ChatCompletionTool[],
+    onStream?: (chunk: string) => void
+  ): Promise<{
+    content: string;
+    toolCalls: OpenAI.Chat.ChatCompletionMessageToolCall[];
+  }> {
+    const stream = await this.openai.chat.completions.create({
+      model: process.env.MODEL_NAME || "gpt-4-turbo-preview",
+      messages: messages as OpenAI.Chat.ChatCompletionMessageParam[],
+      ...(tools && { tools, tool_choice: "auto" }),
+      temperature: 0.7,
+      max_tokens: 1000,
+      stream: true,
+    });
+
+    return this.streamResponse(stream, onStream);
+  }
+
+  async handleUserInput(
+    userInput: string,
+    onStream?: (chunk: string) => void
+  ): Promise<string> {
+    try {
+      const systemPrompt = await this.getSystemPrompt();
+      const tools = this.getTools();
+
+      // Add user message to history
+      this.conversationHistory.push({ role: "user", content: userInput });
+
+      let fullResponse = "";
+      let currentMessages = [
+        { role: "system", content: systemPrompt },
+        ...this.conversationHistory,
+      ];
+
+      while (true) {
+        // Get response from model
+        const { content: modelContent, toolCalls } =
+          await this.getModelResponse(
+            currentMessages as OpenAI.Chat.ChatCompletionMessageParam[],
+            tools,
+            onStream
+          );
+
+        fullResponse += modelContent;
+
+        // If no tool calls, we're done
+        if (!toolCalls || toolCalls.length === 0) {
+          break;
+        }
+
+        // Execute tool calls
+        const toolResults = await this.executeToolCalls(toolCalls);
+
+        // Add tool calls and results to conversation history
+        this.conversationHistory.push({
+          role: "assistant",
+          content: modelContent,
+          tool_calls: toolCalls,
+        });
+
+        this.conversationHistory.push({
+          role: "tool",
+          content: JSON.stringify(toolResults),
+          tool_call_id: toolCalls[0].id,
+        });
+
+        // Update current messages for next iteration
+        currentMessages = [
+          { role: "system", content: systemPrompt },
+          ...this.conversationHistory,
+        ];
+      }
+
+      // Add final assistant's response to history
       this.conversationHistory.push({
         role: "assistant",
         content: fullResponse,
-        tool_calls: currentToolCalls,
       });
 
-      // Add tool results to conversation history
-      this.conversationHistory.push({
-        role: "tool",
-        content: JSON.stringify(toolResults),
-        tool_call_id: currentToolCalls[0].id,
-      });
-
-      // Get final response from model
-      const finalStream = await this.openai.chat.completions.create({
-        model: process.env.MODEL_NAME || "gpt-4-turbo-preview",
-        messages: [
+      // Limit conversation history to prevent memory issues
+      if (this.conversationHistory.length > 20) {
+        this.conversationHistory = [
           { role: "system", content: systemPrompt },
-          ...this.conversationHistory,
-        ],
-        temperature: 0.7,
-        max_tokens: 1000,
-        stream: true,
-      });
-
-      for await (const chunk of finalStream) {
-        const content = chunk.choices[0]?.delta?.content || "";
-        if (content) {
-          fullResponse += content;
-          if (onStream) {
-            onStream(content);
-          } else {
-            process.stdout.write(content);
-          }
-        }
+          ...this.conversationHistory.slice(-19),
+        ];
       }
+
+      return fullResponse;
+    } catch (error) {
+      console.error("Error in handleUserInput:", error);
+      throw new Error(
+        `Failed to handle user input: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
-
-    // Add assistant's response to history
-    this.conversationHistory.push({ role: "assistant", content: fullResponse });
-
-    return fullResponse;
   }
 }
