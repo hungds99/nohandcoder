@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/cli.js",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/cli.ts",
+    "dev": "ts-node src/chat.ts",
     "chat": "ts-node src/cli.ts",
     "prepublishOnly": "npm run build && chmod +x ./dist/cli.js"
   },
@@ -45,7 +45,7 @@
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/inquirer": "^8.2.6",
-    "@types/node": "^20.11.19",
+    "@types/node": "^20.17.28",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2"
   }

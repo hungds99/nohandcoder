@@ -59,6 +59,7 @@ For each action you take:
 4. Get user confirmation before making any file changes
 
 Remember to:
+- Always use the AnalyzeProjectTool first to understand the codebase context
 - Keep track of all files you've examined and changes you've made
 - Verify that proposed changes are consistent with the existing codebase
 - Consider dependencies and potential side effects of changes
@@ -159,8 +160,6 @@ Always be thorough in your analysis but concise in your responses. Focus on comp
       model: process.env.MODEL_NAME || "gpt-4-turbo-preview",
       messages: messages as OpenAI.Chat.ChatCompletionMessageParam[],
       ...(tools && { tools, tool_choice: "auto" }),
-      temperature: 0.7,
-      max_tokens: 1000,
       stream: true,
     });
 

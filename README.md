@@ -1,7 +1,7 @@
 # NoHandCoder
 
 <p align="center">
-  <img src="./assets/nohandcoder-demo.png" alt="NoHandCoder Logo" style="border: 2px solid #333; border-radius: 8px; max-width: 800px; width: 100%;">
+  <img src="https://yx7k0yvtmj.ufs.sh/f/FjqTHbirTuxjVVPT5XC3Pn7RXYxMJFs4GSI5zgcyNEA9pwKd" alt="NoHandCoder Logo" style="border: 2px solid #333; border-radius: 8px; max-width: 800px; width: 100%;">
 </p>
 
 NoHandCoder is your AI-powered coding assistant that transforms how you interact with your codebase. Through natural conversation, it helps you:
