@@ -1,95 +1,65 @@
-# AI Code Agent
+# NoHandCoder
 
-An intelligent coding assistant powered by OpenAI's GPT-4 that helps you navigate, analyze, and manage your codebase through natural language interactions.
+Your intelligent coding companion that helps you navigate, analyze, and manage your codebase through simple conversations. Just chat naturally with the AI to get help with your coding tasks!
 
-## Features
+## What You Can Do
 
-- 🤖 **AI-Powered Assistance**: Get help with coding tasks through natural language conversations
-- 📂 **File Operations**: Read, search, and analyze files in your project
-- 📊 **Project Analysis**: Get insights about your project structure and organization
-- ⚡ **Command Execution**: Execute shell commands safely through the AI interface
-- 🎨 **Beautiful CLI Interface**: User-friendly command-line interface with colorful output
-- 🔒 **Secure**: API keys and sensitive data are handled securely through environment variables
+- 🤖 **Chat with AI**: Ask questions about your code and get helpful responses
+- 📂 **Browse Files**: Easily navigate through your project files and folders
+- 📄 **Read Code**: View and understand your code files
+- 🔍 **Search Code**: Find specific code patterns or functions across your project
+- 📊 **Project Overview**: Get a clear picture of your project structure
+- ⚡ **Run Commands**: Execute commands safely through the AI interface
 
-## Prerequisites
+## Getting Started
 
-- Node.js (v14 or higher)
-- npm (v6 or higher)
-- OpenAI API key
+1. Install the required software:
 
-## Installation
+   - Node.js (v14 or higher)
+   - npm (v6 or higher)
 
-1. Clone the repository:
+2. Get your OpenAI API key from [OpenAI's website](https://platform.openai.com)
 
-```bash
-git clone https://github.com/yourusername/ai-code-agent.git
-cd ai-code-agent
-```
+3. Set up the project:
 
-2. Install dependencies:
+   ```bash
+   # Clone the project
+   git clone https://github.com/hungds99/nohandcoder.git
+   cd nohandcoder
 
-```bash
-npm install
-```
+   # Install the project
+   npm install
 
-3. Create a `.env` file:
-
-```bash
-cp .env.example .env
-```
+   # Set up your API key
+   cp .env.example .env
+   ```
 
 4. Add your OpenAI API key to the `.env` file:
+   ```
+   OPENAI_API_KEY=your_api_key_here
+   MODEL_NAME=gpt-4-turbo-preview
+   ```
+
+## How to Use
+
+1. Start the chat interface:
+
+   ```bash
+   npm run chat
+   ```
+
+2. Choose from these options:
+   - 💬 **Ask AI Assistant**: Get help with your code
+   - 📂 **List Directory**: See what's in your current folder
+   - 📄 **Read File**: View any file's contents
+   - 🔍 **Search Files**: Find specific code
+   - 📊 **Project Structure**: See your project overview
+   - ⚡ **Run Commands**: Execute commands safely
+
+## Example Chat
 
 ```
-OPENAI_API_KEY=your_api_key_here
-MODEL_NAME=gpt-4-turbo-preview
-```
-
-## Usage
-
-Start the chat interface:
-
-```bash
-npm run chat
-```
-
-### Available Commands
-
-1. **💬 Ask AI Assistant**
-
-   - Ask questions about your codebase
-   - Get help with coding tasks
-   - Request code analysis or explanations
-
-2. **📂 List current directory**
-
-   - View files and folders in the current directory
-   - Navigate through your project structure
-
-3. **📄 Read a file**
-
-   - Select and view file contents
-   - See file metadata (size, last modified)
-
-4. **🔍 Search in files**
-
-   - Search for text across your project
-   - Find specific code patterns or functions
-
-5. **📊 Analyze project structure**
-
-   - Get an overview of your project
-   - View file counts and sizes
-   - See directory organization
-
-6. **⚡ Execute command**
-   - Run shell commands safely
-   - Get command output and errors
-
-### Example Interactions
-
-```
-🤖 Welcome to AI Code Agent!
+🤖 Welcome to NoHandCoder!
 Type "exit" to quit
 
 ? What would you like to do? 💬 Ask AI Assistant
@@ -97,67 +67,31 @@ Type "exit" to quit
 
 [AI] Analyzing your request...
 
-💭 [AI Thought Process]
-I'll analyze the project structure to provide a comprehensive overview.
-
-🔧 [AI Tool Usage]
-analyzeProjectStructure()
-
-📊 [AI Tool Results]
-{
-  "totalFiles": 42,
-  "totalSize": 1024,
-  "directories": ["src", "tests", "docs"],
-  "files": [...]
-}
-
-✨ [AI Final Response]
-Your project consists of 42 files...
+✨ [AI Response]
+Your project follows a clean architecture with the following structure...
 ```
 
-## Project Structure
+## Tips for Best Results
 
-```
-ai-code-agent/
-├── src/
-│   ├── services/
-│   │   ├── AIService.ts      # OpenAI integration and AI logic
-│   │   ├── FileService.ts    # File operations and project analysis
-│   │   └── CommandService.ts # Shell command execution
-│   ├── types.ts              # TypeScript type definitions
-│   └── chat.ts               # CLI interface
-├── .env.example              # Example environment variables
-├── package.json              # Project dependencies and scripts
-└── tsconfig.json            # TypeScript configuration
-```
+1. **Be Specific**: The more specific your questions, the better the AI can help you
+2. **Use Natural Language**: Just ask questions as you would to a human assistant
+3. **Explore Features**: Try different commands to discover what the AI can do
+4. **Stay in Context**: The AI remembers your conversation, so build on previous questions
 
-## Development
+## Need Help?
 
-### Building
-
-```bash
-npm run build
-```
-
-### Running Tests
-
-```bash
-npm test
-```
-
-### Development Mode
-
-```bash
-npm run dev
-```
+- Type "exit" to quit the chat
+- Ask the AI for help with any feature
+- Check the project's issues page for known problems
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome contributions! Feel free to:
+
+1. Fork the project
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
 ## License
 
@@ -166,4 +100,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgments
 
 - OpenAI for providing the GPT-4 API
-- The open-source community for various tools and libraries used in this project
+- The open-source community for their valuable contributions
