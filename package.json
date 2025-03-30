@@ -1,6 +1,6 @@
 {
   "name": "nohandcoder",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An AI agent for code editing, searching, and project analysis",
   "main": "dist/cli.js",
   "bin": {
