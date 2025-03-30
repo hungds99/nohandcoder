@@ -157,7 +157,7 @@ Always be thorough in your analysis but concise in your responses. Focus on comp
     toolCalls: OpenAI.Chat.ChatCompletionMessageToolCall[];
   }> {
     const stream = await this.openai.chat.completions.create({
-      model: process.env.MODEL_NAME || "gpt-4-turbo-preview",
+      model: process.env.MODEL_NAME || "gpt-4o-mini",
       messages: messages as OpenAI.Chat.ChatCompletionMessageParam[],
       ...(tools && { tools, tool_choice: "auto" }),
       stream: true,
