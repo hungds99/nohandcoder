@@ -6,7 +6,7 @@ import { NoHandCoderAgent } from "./agents/NoHandCoderAgent";
 dotenv.config();
 
 if (!process.env.OPENAI_API_KEY) {
-  console.error(chalk.red("Error: OPENAI_API_KEY is not set in .env file"));
+  console.error(chalk.red("Error: OPENAI_API_KEY is not set"));
   process.exit(1);
 }
 
@@ -14,7 +14,7 @@ const workspaceRoot = process.cwd();
 const aiService = new NoHandCoderAgent(workspaceRoot);
 
 export async function chat() {
-  console.log(chalk.blue("\n🤖 Welcome to AI Code Assistant!"));
+  console.log(chalk.blue("\n🤖 Welcome to No Hand Coder Agent!"));
   console.log(
     chalk.gray(
       "Let's have a conversation about your code. Type 'exit' or 'quit' to end the conversation.\n"
