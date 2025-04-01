@@ -28,7 +28,7 @@ Set up your environment variables:
 
 ```bash
 export OPENAI_API_KEY=your_api_key_here
-export MODEL_NAME=gpt-4-turbo-preview
+export MODEL_NAME=gpt-4o-mini
 ```
 
 ## How to Use
