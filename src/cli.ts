@@ -3,6 +3,7 @@
 import { Command } from "commander";
 import { config } from "dotenv";
 import { chat } from "./chat";
+import { version } from "../package.json";
 
 // Load environment variables
 config();
@@ -12,7 +13,7 @@ const program = new Command();
 program
   .name("nohandcoder")
   .description("AI-powered code editing and project analysis tool")
-  .version("1.0.0");
+  .version(version);
 
 program
   .command("chat")
