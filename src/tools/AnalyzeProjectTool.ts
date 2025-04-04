@@ -9,6 +9,25 @@ import chalk from "chalk";
 export class AnalyzeProjectTool implements BaseTool {
   constructor(private workspaceRoot: string) {}
 
+  private async getIgnorePatterns(): Promise<string[]> {
+    const gitignorePath = path.join(this.workspaceRoot, ".gitignore");
+    try {
+      const content = await fs.promises.readFile(gitignorePath, "utf-8");
+      return content
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line && !line.startsWith("#"))
+        .map((pattern) => `**/${pattern}/**`);
+    } catch (error) {
+      console.warn(
+        chalk.yellow(
+          "Warning: .gitignore file not found or cannot be read. Using default ignore patterns."
+        )
+      );
+      return ["**/node_modules/**", "**/.git/**", "**/dist/**", "**/.env*"];
+    }
+  }
+
   getDefinition(): OpenAI.Chat.ChatCompletionTool {
     return {
       type: "function" as const,
@@ -26,17 +45,12 @@ export class AnalyzeProjectTool implements BaseTool {
   }
 
   async execute(): Promise<ProjectStructure> {
-    console.log(chalk.blue("Analyzing project structure..."));
+    console.log(chalk.blue("\nAnalyzing project structure..."));
 
+    const ignorePatterns = await this.getIgnorePatterns();
     const files = await glob("**/*", {
       cwd: this.workspaceRoot,
-      ignore: [
-        "**/node_modules/**",
-        "**/.git/**",
-        "**/dist/**",
-        "**/.env*",
-        "**/package-lock.json",
-      ],
+      ignore: ignorePatterns,
       dot: false,
     });
 
