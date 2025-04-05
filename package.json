@@ -48,5 +48,8 @@
     "@types/node": "^20.17.28",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
