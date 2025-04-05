@@ -1,46 +1,92 @@
-name: Release and Publish to npm
+name: Tag and Publish
 
 on:
-  workflow_dispatch:
-    inputs:
-      release_type:
-        description: "Release type (patch, minor, major)"
-        required: true
-        default: "patch"
+  push:
+    branches:
+      - main
 
 jobs:
   release:
     runs-on: ubuntu-latest
-
     permissions:
-      contents: write
-      packages: write
-      id-token: write
+      contents: write # Required for creating tags and releases
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # Updated to latest version
+        with:
+          fetch-depth: 0 # Fetches full history for version comparison
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4 # Updated to latest version
         with:
-          node-version: "20"
+          node-version: "18"
           registry-url: "https://registry.npmjs.org/"
+          cache: "npm" # Added caching for faster installs
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit # Added flags for reliability
 
-      - name: Bump version
-        run: |
-          npm version ${{ github.event.inputs.release_type }} -m "chore(release): %s"
+      - name: Get package version
+        id: package-version
+        run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
-      - name: Push version tag
+      - name: Check if tag exists
+        id: check-tag
         run: |
-          git push origin main --follow-tags
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG="v${{ steps.package-version.outputs.VERSION }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists, skipping tag creation"
+            echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
+          else
+            echo "Tag $TAG does not exist, proceeding"
+            echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Verify npm package doesn't exist
+        if: steps.check-tag.outputs.TAG_EXISTS == 'false'
+        id: check-npm
+        run: |
+          VERSION=${{ steps.package-version.outputs.VERSION }}
+          if npm view "${{ github.repository }}@$VERSION" version >/dev/null 2>&1; then
+            echo "Package version $VERSION already exists on npm, skipping publish"
+            echo "NPM_EXISTS=true" >> $GITHUB_OUTPUT
+          else
+            echo "NPM_EXISTS=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Git tag
+        if: steps.check-tag.outputs.TAG_EXISTS == 'false'
+        run: |
+          TAG="v${{ steps.package-version.outputs.VERSION }}"
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
+        continue-on-error: false # Fail the workflow if this step fails
+
+      - name: Build
+        if: steps.check-tag.outputs.TAG_EXISTS == 'false'
+        run: npm run build # Assumes build step exists
+        continue-on-error: false # Fail if build fails
 
       - name: Publish to npm
-        run: npm publish
+        if: steps.check-tag.outputs.TAG_EXISTS == 'false' && steps.check-npm.outputs.NPM_EXISTS == 'false'
+        run: npm publish --access public --dry-run=false
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        if: steps.check-tag.outputs.TAG_EXISTS == 'false'
+        uses: softprops/action-gh-release@v2 # Updated to a maintained action
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.package-version.outputs.VERSION }}
+          name: Release v${{ steps.package-version.outputs.VERSION }}
+          body: |
+            Automated release for version ${{ steps.package-version.outputs.VERSION }}.
+            See package.json or changelog for details.
+          draft: false
+          prerelease: false
+          fail_on_unmatched_files: true
